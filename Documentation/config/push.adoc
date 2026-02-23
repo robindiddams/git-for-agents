@@ -1,3 +1,9 @@
+`push.allowForcePush`::
+	If set to `false`, `git push` will refuse to run when `--force`,
+	`--force-with-lease`, or `--mirror` options are specified. This
+	provides a client-side safety mechanism to prevent accidental
+	force pushes. Defaults to `true` (force push allowed).
+
 `push.autoSetupRemote`::
 	If set to `true` assume `--set-upstream` on default push when no
 	upstream tracking exists for the current branch; this option
