@@ -64,6 +64,8 @@ static enum transport_family family;
 
 static struct push_cas_option cas;
 
+static int allow_force_push = -1; /* unset, defaults to allowed */
+
 static struct refspec rs = REFSPEC_INIT_PUSH;
 
 static struct string_list push_options_config = STRING_LIST_INIT_DUP;
@@ -532,6 +534,9 @@ static int git_push_config(const char *k, const char *v,
 		if (!v)
 			return config_error_nonbool(k);
 		return color_parse(v, push_colors[slot]);
+	} else if (!strcmp(k, "push.allowforcepush")) {
+		allow_force_push = git_config_bool(k, v);
+		return 0;
 	} else if (!strcmp(k, "push.useforceifincludes")) {
 		if (git_config_bool(k, v))
 			*flags |= TRANSPORT_PUSH_FORCE_IF_INCLUDES;
@@ -656,6 +661,12 @@ int cmd_push(int argc,
 
 	if (!is_empty_cas(&cas) && (flags & TRANSPORT_PUSH_FORCE_IF_INCLUDES))
 		cas.use_force_if_includes = 1;
+
+	if (allow_force_push == 0) {
+		if ((flags & TRANSPORT_PUSH_FORCE) || cas.use_tracking_for_rest || cas.nr)
+			die(_("The user has configured this git client to prevent rewriting history.\n"
+			      "Create a new commit to make corrections instead of force pushing."));
+	}
 
 	for_each_string_list_item(item, push_options)
 		if (strchr(item->string, '\n'))
