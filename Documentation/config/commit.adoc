@@ -4,6 +4,12 @@ endif::git-commit[]
 ifndef::git-commit[]
 :see-git-commit: See linkgit:git-commit[1] for details.
 endif::git-commit[]
+`commit.allowAmend`::
+	If set to `false`, `git commit --amend` will refuse to run unless
+	`--no-verify` is also specified. This provides a client-side safety
+	mechanism to prevent AI agents from rewriting commit history.
+	Defaults to `true` (amend allowed).
+
 `commit.cleanup`::
 	This setting overrides the default of the `--cleanup` option in
 	`git commit`. {see-git-commit} Changing the default can be useful

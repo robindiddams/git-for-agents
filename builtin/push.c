@@ -664,8 +664,21 @@ int cmd_push(int argc,
 
 	if (allow_force_push == 0) {
 		if ((flags & TRANSPORT_PUSH_FORCE) || cas.use_tracking_for_rest || cas.nr)
-			die(_("The user has configured this git client to prevent rewriting history.\n"
-			      "Create a new commit to make corrections instead of force pushing."));
+			die(_("\n\n"
+			      "  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
+			      "  !!\n"
+			      "  !!     ____  _     ___   ____ _  _______ ____  _\n"
+			      "  !!    | __ )| |   / _ \\ / ___| |/ / ____|  _ \\| |\n"
+			      "  !!    |  _ \\| |  | | | | |   | ' /|  _| | | | | |\n"
+			      "  !!    | |_) | |__| |_| | |___| . \\| |___| |_| |_|\n"
+			      "  !!    |____/|_____\\___/ \\____|_|\\_\\_____|____/(_)\n"
+			      "  !!\n"
+			      "  !!    The user has configured this git client to prevent rewriting history.\n"
+			      "  !!    (push.allowForcePush = false)\n"
+			      "  !!\n"
+			      "  !!    >>> Create a new commit to make corrections instead. <<<\n"
+			      "  !!\n"
+			      "  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"));
 	}
 
 	for_each_string_list_item(item, push_options)

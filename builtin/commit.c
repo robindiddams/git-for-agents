@@ -126,6 +126,7 @@ static int all, also, interactive, patch_interactive, only, amend, signoff;
 static struct add_p_opt add_p_opt = ADD_P_OPT_INIT;
 static int edit_flag = -1; /* unspecified */
 static int quiet, verbose, no_verify, allow_empty, dry_run, renew_authorship;
+static int allow_amend = -1; /* unset, defaults to allowed */
 static int config_commit_verbose = -1; /* unspecified */
 static int no_post_rewrite, allow_empty_message, pathspec_file_nul;
 static const char *untracked_files_arg, *force_date, *ignore_submodule_arg, *ignored_arg;
@@ -1336,6 +1337,25 @@ static int parse_and_validate_options(int argc, const char *argv[],
 		else if (whence == FROM_REBASE_PICK)
 			die(_("You are in the middle of a rebase -- cannot amend."));
 	}
+	if (allow_amend == 0 && amend && !no_verify) {
+		die(_("\n\n"
+		      "  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
+		      "  !!\n"
+		      "  !!     ____  _     ___   ____ _  _______ ____  _\n"
+		      "  !!    | __ )| |   / _ \\ / ___| |/ / ____|  _ \\| |\n"
+		      "  !!    |  _ \\| |  | | | | |   | ' /|  _| | | | | |\n"
+		      "  !!    | |_) | |__| |_| | |___| . \\| |___| |_| |_|\n"
+		      "  !!    |____/|_____\\___/ \\____|_|\\_\\_____|____/(_)\n"
+		      "  !!\n"
+		      "  !!    The user has configured this git client to prevent amending commits.\n"
+		      "  !!    (commit.allowAmend = false)\n"
+		      "  !!\n"
+		      "  !!    >>> Create a new commit to make corrections instead. <<<\n"
+		      "  !!\n"
+		      "  !!    To override this check, use: git commit --amend --no-verify\n"
+		      "  !!\n"
+		      "  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"));
+	}
 	if (fixup_message && squash_message)
 		die(_("options '%s' and '%s' cannot be used together"), "--squash", "--fixup");
 	die_for_incompatible_opt4(!!use_message, "-C",
@@ -1689,6 +1709,10 @@ static int git_commit_config(const char *k, const char *v,
 		int is_bool;
 		config_commit_verbose = git_config_bool_or_int(k, v, ctx->kvi,
 							       &is_bool);
+		return 0;
+	}
+	if (!strcmp(k, "commit.allowamend")) {
+		allow_amend = git_config_bool(k, v);
 		return 0;
 	}
 

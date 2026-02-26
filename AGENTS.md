@@ -1,29 +1,77 @@
 # Git for Agents
 
-A fork of [git](https://github.com/git/git) with a client-side config to prevent AI agents (or anyone) from rewriting history via force push.
+A fork of [git](https://github.com/git/git) with client-side configs to prevent AI agents (or anyone) from rewriting history via force push or commit amend.
 
 ## The Problem
 
 AI coding agents will sometimes use `git push --force` or `git push --force-with-lease` to "fix" a messy commit history. This rewrites remote history, which is destructive and disruptive in collaborative repos. Agents should create new commits to make corrections, not rewrite the ones that already exist.
 
+Similarly, agents will use `git commit --amend` to silently rewrite the last commit instead of creating a new one. This is less destructive than force push (it only affects local history), but it's still surprising and makes it harder to review what an agent actually did.
+
 ## What Changed
 
-A single new config variable: **`push.allowForcePush`**
+Two new config variables: **`push.allowForcePush`** and **`commit.allowAmend`**
+
+### `push.allowForcePush`
 
 When set to `false`, any `git push` that uses `--force`, `--force-with-lease`, or `--mirror` is blocked with a clear error message:
 
 ```
-fatal: The user has configured this git client to prevent rewriting history.
-Create a new commit to make corrections instead of force pushing.
+fatal:
+
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !!
+  !!     ____  _     ___   ____ _  _______ ____  _
+  !!    | __ )| |   / _ \ / ___| |/ / ____|  _ \| |
+  !!    |  _ \| |  | | | | |   | ' /|  _| | | | | |
+  !!    | |_) | |__| |_| | |___| . \| |___| |_| |_|
+  !!    |____/|_____\___/ \____|_|\_\_____|____/(_)
+  !!
+  !!    The user has configured this git client to prevent rewriting history.
+  !!    (push.allowForcePush = false)
+  !!
+  !!    >>> Create a new commit to make corrections instead. <<<
+  !!
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ```
 
 The message is intentionally written to direct an AI agent toward the correct behavior: make a new commit instead.
 
+### `commit.allowAmend`
+
+When set to `false`, any `git commit --amend` is blocked with a clear error message:
+
+```
+fatal:
+
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !!
+  !!     ____  _     ___   ____ _  _______ ____  _
+  !!    | __ )| |   / _ \ / ___| |/ / ____|  _ \| |
+  !!    |  _ \| |  | | | | |   | ' /|  _| | | | | |
+  !!    | |_) | |__| |_| | |___| . \| |___| |_| |_|
+  !!    |____/|_____\___/ \____|_|\_\_____|____/(_)
+  !!
+  !!    The user has configured this git client to prevent amending commits.
+  !!    (commit.allowAmend = false)
+  !!
+  !!    >>> Create a new commit to make corrections instead. <<<
+  !!
+  !!    To override this check, use: git commit --amend --no-verify
+  !!
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+```
+
+Unlike force push, amending can be bypassed with `--no-verify` for cases where a human genuinely needs to amend. An AI agent won't add `--no-verify` on its own.
+
 ### Files Modified
 
 - **`builtin/push.c`** — Config parsing and enforcement check
+- **`builtin/commit.c`** — Config parsing and enforcement check for amend
 - **`Documentation/config/push.adoc`** — Config documentation
+- **`Documentation/config/commit.adoc`** — Config documentation
 - **`t/t5556-push-allow-force.sh`** — 6 test cases
+- **`t/t7528-commit-allow-amend.sh`** — 6 test cases
 
 ### How It Works
 
