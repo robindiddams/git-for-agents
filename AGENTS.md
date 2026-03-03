@@ -57,8 +57,6 @@ fatal:
   !!
   !!    >>> Create a new commit to make corrections instead. <<<
   !!
-  !!    To override this check, use: git commit --amend --no-verify
-  !!
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ```
 

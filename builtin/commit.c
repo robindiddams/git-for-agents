@@ -1352,8 +1352,6 @@ static int parse_and_validate_options(int argc, const char *argv[],
 		      "  !!\n"
 		      "  !!    >>> Create a new commit to make corrections instead. <<<\n"
 		      "  !!\n"
-		      "  !!    To override this check, use: git commit --amend --no-verify\n"
-		      "  !!\n"
 		      "  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"));
 	}
 	if (fixup_message && squash_message)
