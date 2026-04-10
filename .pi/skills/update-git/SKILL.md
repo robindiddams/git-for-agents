@@ -1,6 +1,6 @@
 ---
 name: update-git
-description: Updates this fork to the latest git/git upstream. Rebases custom commits (allowForcePush, allowAmend) onto upstream/main, resolves conflicts if possible, tests the build, and force pushes. Use when you want to sync with the latest git development.
+description: Updates this fork to the latest git/git upstream. Rebases custom commits (allowForcePush, allowAmend) onto upstream/master, resolves conflicts if possible, tests the build, and force pushes. Use when you want to sync with the latest git development.
 ---
 
 # Update Git Fork
@@ -15,7 +15,7 @@ This fork contains custom commits that must be preserved on top of upstream. The
 2. `commit.allowAmend` config in `builtin/commit.c`
 3. `AGENTS.md` documentation
 
-The rebase will preserve all commits between `upstream/main` and the current HEAD.
+The rebase will preserve all commits between `upstream/master` and the current HEAD.
 
 ## Process
 
@@ -46,7 +46,7 @@ CURRENT_SHA=$(git rev-parse HEAD)
 ### 4. Rebase Onto Upstream
 
 ```bash
-git rebase upstream/main
+git rebase upstream/master
 ```
 
 ### 5. Handle Conflicts (if any)
@@ -98,7 +98,7 @@ Write `REBASE_INFO.md` in the repo root:
 ```markdown
 # Rebase Status: SUCCESS
 
-Upstream SHA: <sha of upstream/main>
+Upstream SHA: <sha of upstream/master>
 Previous HEAD: <old sha before rebase>
 New HEAD: <new sha after rebase>
 
@@ -111,7 +111,7 @@ New HEAD: <new sha after rebase>
 ```markdown
 # Rebase Status: FAILED
 
-Upstream SHA: <sha of upstream/main>
+Upstream SHA: <sha of upstream/master>
 Previous HEAD: <old sha before rebase - where we reset back to>
 
 ## Reason
@@ -129,6 +129,16 @@ git reset --hard <original-sha>  # if rebase completed but tests failed
 ```
 
 DO NOT force push on failure.
+
+### 9. Commit and Push Report
+
+After writing REBASE_INFO.md, commit it and force push again:
+
+```bash
+git add REBASE_INFO.md
+git commit -m "update REBASE_INFO after sync with upstream"
+<path-to-system-git> push --force origin master
+```
 
 ## Key Code to Preserve
 

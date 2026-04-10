@@ -1,3 +1,9 @@
+✨ **git-for-agents** — A fork of git with client-side protections against AI agents rewriting history. ✨
+
+This repo is routinely rebased from [git/master](https://github.com/git/git).
+
+---
+
 [![Build status](https://github.com/git/git/workflows/CI/badge.svg)](https://github.com/git/git/actions?query=branch%3Amaster+event%3Apush)
 
 Git - fast, scalable, distributed revision control system
